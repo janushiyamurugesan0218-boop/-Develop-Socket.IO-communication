@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.IO Chat Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        #messages {
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 75%;
+            padding: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+        }
+
+        .msg {
+            margin: 5px 0;
+            padding: 8px;
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Socket.IO Communication Demo</h2>
+
+<div id="messages"></div>
+
+<input type="text" id="messageInput" placeholder="Type a message">
+<button onclick="sendMessage()">Send</button>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+    const socket = io("http://localhost:3000");
+
+    const messages = document.getElementById("messages");
+
+    socket.on("connect", () => {
+        addMessage("Connected to server");
+    });
+
+    socket.on("chat message", (msg) => {
+        addMessage("Server: " + msg);
+    });
+
+    function sendMessage() {
+        const input = document.getElementById("messageInput");
+
+        if (input.value.trim() === "") return;
+
+        socket.emit("chat message", input.value);
+
+        addMessage("You: " + input.value);
+
+        input.value = "";
+    }
+
+    function addMessage(text) {
+        const div = document.createElement("div");
+        div.className = "msg";
+        div.textContent = text;
+
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
